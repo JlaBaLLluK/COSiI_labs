@@ -57,24 +57,24 @@ def make_function_graphic(x, y, index, title):
     plt.tight_layout()
 
 
-def fft(x):
-    n = len(x)
-    if n <= 1:
-        return x
-    even = fft(x[0::2])
-    odd = fft(x[1::2])
-    t = [np.exp(-2j * np.pi * k / n) * odd[k] for k in range(n // 2)]
-    return [even[k] + t[k] for k in range(n // 2)] + [even[k] - t[k] for k in range(n // 2)]
+def fft(a, direction):
+    size = len(a)
+    if size == 1:
+        return a
 
+    a_even = a[::2]
+    a_odd = a[1::2]
+    b_even = fft(a_even, direction)
+    b_odd = fft(a_odd, direction)
+    omega_n = np.exp(-1 * direction * 2j * np.pi / size)
+    omega = 1
+    y = np.zeros(size, dtype=complex)
+    for j in range(size // 2):
+        y[j] = b_even[j] + omega * b_odd[j]
+        y[j + size // 2] = b_even[j] - omega * b_odd[j]
+        omega *= omega_n
 
-def ifft(x):
-    n = len(x)
-    if n <= 1:
-        return x
-    even = ifft(x[0::2])
-    odd = ifft(x[1::2])
-    t = [np.exp(2j * np.pi * k / n) * odd[k] for k in range(n // 2)]
-    return [even[k] + t[k] for k in range(n // 2)] + [even[k] - t[k] for k in range(n // 2)]
+    return y
 
 
 def compute_spectra(y_fft):
@@ -89,7 +89,7 @@ def main():
     x, y = get_x_y()
     make_function_graphic(x, y, 2, 'Function (manual)')
 
-    y_fft = fft(y)
+    y_fft = fft(y, 1)
     amp_spectrum, phase_spectrum = compute_spectra(y_fft)
     plt.subplot(4, 2, 4)
     plt.plot(frequency, amp_spectrum)
@@ -99,7 +99,7 @@ def main():
     plt.plot(frequency, phase_spectrum)
     plt.title('Phase (manual)')
 
-    y = ifft(y_fft)
+    y = fft(y_fft, -1)
     plt.subplot(4, 2, 8)
     plt.plot(x, [elem.real / 64 for elem in y])
     plt.title('Inverse (manual)')
