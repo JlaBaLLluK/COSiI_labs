@@ -25,7 +25,7 @@ def task_using_libs():
     plt.subplot(4, 2, 5)
     plt.plot(frequency, phase_spectrum)
     plt.title('Phase')
-
+    
     inv_y_fft = np.fft.ifft(y_fft)
     plt.subplot(4, 2, 7)
     plt.plot(x, inv_y_fft.real)
