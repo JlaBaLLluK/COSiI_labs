@@ -101,6 +101,7 @@ def main():
     z = np.sin(5 * x)
     make_functions_graphics(x, y, z)
     linear_convolution_result = linear_convolution(y, z)
+    print(len(linear_convolution_result))
     make_linear_convolution_correlation_graphics(y, z, linear_convolution_result)
     cyclic_convolution_result = cyclic_convolution(y, z)
     correlation_result = correlation(y, z)
